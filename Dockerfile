@@ -17,6 +17,6 @@ RUN pip install -r requirements.txt
 COPY run.py .
 COPY src/ src/
 
-COPY private/config.ini ./private/config.ini
+COPY private/config.ini private/config.ini
 # command to run on container start
 CMD [ "python", "-u" ,"./run.py" ]
