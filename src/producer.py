@@ -67,8 +67,8 @@ class Producor(ABC):
             # Get some data 
             try:
                 notify = in_q.popleft()
-                print("Got NOTIFY:", notify.pid, notify.channel, notify.payload)
-                print("Sending message to create a queue")
+                print("[rabbit-producer] Got NOTIFY:", notify.pid, notify.channel, notify.payload)
+                print("[rabbit-producer] Sending message to create a queue")
                 try:
                     self.publish(notify.payload)
                 except Exception as e:
@@ -79,7 +79,7 @@ class Producor(ABC):
                     in_q.put(_sentinel) 
                     break
             except IndexError:
-                print("[Consumer] Nothing to Process")
+                print("[rabbit-producer] Nothing to Process")
                 event.wait(5)
                 continue
             except Exception as e:

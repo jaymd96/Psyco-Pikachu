@@ -36,11 +36,11 @@ class DbStorage(ConnectionRecovery):
         curs = conn.cursor()
         curs.execute("LISTEN test;")
 
-        print("Waiting for notifications on channel 'test'")
+        print("[pg_consumer] Waiting for notifications on channel 'test'")
         while True:
             try:
                 if select.select([conn],[],[],5) == ([],[],[]):
-                    print("Timeout")
+                    print("[pg_consumer] Timeout")
                 else:
                     conn.poll()
             except Exception as e:
