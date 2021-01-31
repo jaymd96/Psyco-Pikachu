@@ -1,10 +1,10 @@
 import psycopg2
 import select
-from connection_recovery import ConnectionRecovery, reconnect
+from src.connection_recovery import ConnectionRecovery, reconnect
 from tenacity import retry, retry_if_exception_type
 
 
-class DbStorage(ConnectionRecovery):
+class PostgresClient(ConnectionRecovery):
 
     def __init__(self, conn: dict):
         self._connection_params: dict = conn

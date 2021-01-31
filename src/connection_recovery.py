@@ -14,16 +14,16 @@ class ConnectionRecovery():
 def reconnect(recoverable_exception: Exception):
     def reconnect_exception(f: Callable):
         @wraps(f)
-        def wrapper(storage, *args, **kwargs):
-            if not storage.connected():
-                storage.connect()
+        def wrapper(connector, *args, **kwargs):
+            if not connector.connected():
+                connector.connect()
 
             try:
-                return f(storage, *args, **kwargs)
+                return f(connector, *args, **kwargs)
             except recoverable_exception as e:
                 raise e
             except:
-                storage.close()
+                connector.close()
                 raise
 
         return wrapper

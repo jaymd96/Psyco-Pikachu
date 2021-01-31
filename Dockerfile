@@ -18,4 +18,4 @@ COPY src/ .
 
 COPY private/config.ini ./private/config.ini
 # command to run on container start
-CMD [ "python", "./run.py" ]
+CMD [ "python", "-u" ,"./run.py" ]
