@@ -1,30 +1,33 @@
 from collections import deque
 from configparser import ConfigParser
 from threading import Event, Thread
+from concurrent.futures import ThreadPoolExecutor
 
 from src.consumer.postgresClient import PostgresClient
 from src.producer.simpleProducer import SimpleProducor
 from src.utils import make_rabbit_url
 
-# Object that signals shutdown 
-_sentinel = object() 
-event = Event()
+NUM_RABBIT_WORKERS = 10
 
+## CONFIG
 config = ConfigParser()
 config.read('./private/config.ini') 
 
+## SETUP
 rabbit_url = make_rabbit_url(**config['rabbitmq'])
-rabbit_client = SimpleProducor(rabbit_url)
 db_client = PostgresClient(config['postgres'])
 
+_sentinel = object() 
+event = Event()
 
 if __name__ == "__main__":
     q = deque()
-    t1 = Thread(target = rabbit_client.send_events, args =(event, q, ), daemon=True) 
-    t2 = Thread(target = db_client.poll_events, args =(event, q, ), daemon=True) 
     try:
-        t1.start() 
+        rabbit_executor = ThreadPoolExecutor(max_workers=NUM_RABBIT_WORKERS)
+        for worker_numebr in range(1,NUM_RABBIT_WORKERS):
+            rabbit_executor.submit(SimpleProducor(rabbit_url).send_events, event, q)
+        t2 = Thread(target = db_client.poll_events, args =(event, q, ), daemon=True) 
         t2.start()
-        input()
     except KeyboardInterrupt:
+        rabbit_executor.shutdown()
         q.append(_sentinel)
