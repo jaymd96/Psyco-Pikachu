@@ -8,6 +8,7 @@ from src.utils import make_rabbit_url
 
 # Object that signals shutdown 
 _sentinel = object() 
+event = Event()
 
 config = ConfigParser()
 config.read('./private/config.ini') 
@@ -19,13 +20,11 @@ db_client = PostgresClient(config['postgres'])
 
 if __name__ == "__main__":
     q = deque()
-    t1 = Thread(target = rabbit_client.send_events, args =(q,), daemon=True) 
-    t2 = Thread(target = db_client.poll_events, args =(q,), daemon=True) 
+    t1 = Thread(target = rabbit_client.send_events, args =(event, q, ), daemon=True) 
+    t2 = Thread(target = db_client.poll_events, args =(event, q, ), daemon=True) 
     try:
         t1.start() 
         t2.start()
-    except:
-        q.append(_sentinel) 
-    
-    t1.join()
-    t2.join()
+        input()
+    except KeyboardInterrupt:
+        q.append(_sentinel)

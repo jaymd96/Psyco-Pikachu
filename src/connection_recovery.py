@@ -1,7 +1,7 @@
 from typing import Callable
 from functools import wraps
 
-class ConnectionRecovery():
+class Connector():
     def connected(self) -> bool:
         raise NotImplementedError
 

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from threading import Event
 
 import pika
-import src.utils
+from src.utils import *
 from src.connection_recovery import reconnect
 from pika.exceptions import AMQPConnectionError, AMQPError
 from tenacity import retry, retry_if_exception_type
@@ -12,7 +12,7 @@ from .producerBase import Producor
 
 class SimpleProducor(Producor):
     """
-    SimpleProducor use singleton pattern. Connection to rabbitmq is BlockingConnection. All messages are durable and ack needed.
+    SimpleProducor, BlockingConnection. Messages are durable and ack needed.
     """
     EXCHANGE_TYPE = "direct"
 
@@ -26,9 +26,9 @@ class SimpleProducor(Producor):
         if namespace is None:
             namespace = self._namespace
         
-        exchange = utils.make_exchange_name(namespace, self.EXCHANGE_TYPE)
-        routing_key = utils.make_direct_key(namespace)
-        queue_name = utils.make_queue_name(namespace, self.EXCHANGE_TYPE)
+        exchange = make_exchange_name(namespace, self.EXCHANGE_TYPE)
+        routing_key = make_direct_key(namespace)
+        queue_name = make_queue_name(namespace, self.EXCHANGE_TYPE)
 
         channel = self._channel
 
